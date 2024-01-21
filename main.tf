@@ -1,26 +1,26 @@
-
-
-
 provider "aws" {
-  region = "us-east-1"
- 
+  region ="eu-west-3"
 }
 
-variable "vpc_cidr_block" {
-  description = "value of vpc cidr block"
+variable vpc_cidr_block {}
+variable subnet_cidr_block {}
+variable avail_zone {}
+variable env_prefix {}
+
+resource "aws_vpc" "myapp_vpc" {
+   cidr_block = var.vpc_cidr_block
+   tags ={
+     Name = "${var.env_prefix}-vpc"
+   }
 }
 
-variable "subnet_cidr_block" {
-  description = "value of subnet cidr block"
+resource "aws_subnet" "myapp_subnet-1" {
+   vpc_id =aws_vpc.myapp_vpc.id
+   cidr_block = var.subnet_cidr_block
+   availability_zone = var.avail_zone
+   tags = {
+      Name = "${var.env_prefix}-subnet-1"
+   }
 }
-resource "aws_vpc" "dev_vpc" {
-  cidr_block = var.vpc_cidr_block
-}
-
-resource "aws_subnet" "dev_subnet" {
-    vpc_id= aws_vpc.dev_vpc.id
-    cidr_block = var.subnet_cidr_block
-    availability_zone = "us-east-1a"
-}
-
+  
 
