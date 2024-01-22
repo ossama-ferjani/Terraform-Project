@@ -84,3 +84,16 @@ data "aws_ami" "latest_amazon_linux" {
 }
 }
 
+resource "aws_instance" "myapp_instance" {
+ami= data.aws_ami.latest_amazon_linux.id 
+instance_type = var.instance_type
+subnet_id = aws_subnet.myapp_subnet-1.id
+associate_public_ip_address = true
+vpc_security_group_ids = [aws_security_group.myapp_sg.id]
+availability_zone = var.avail_zone
+tags = {
+  Name = "${var.env_prefix}-instance"
+}
+#key-pair or password authentication needed
+key_name = "myapp-key"
+}
