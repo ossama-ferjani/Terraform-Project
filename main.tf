@@ -8,6 +8,7 @@ variable avail_zone {}
 variable env_prefix {}
 variable "my_ip" {}
 variable "instance_type" {}
+variable "key_pair" {}
 
 resource "aws_vpc" "myapp_vpc" {
    cidr_block = var.vpc_cidr_block
@@ -83,6 +84,13 @@ data "aws_ami" "latest_amazon_linux" {
     values = ["hvm"]
 }
 }
+resource "aws_key_pair" "ssh-key" {
+  key_name = "server-key"
+  public_key = "${file(var.key_pair)}"
+  tags = {
+    Name = "${var.env_prefix}-key"
+  }
+}
 
 resource "aws_instance" "myapp_instance" {
 ami= data.aws_ami.latest_amazon_linux.id 
@@ -95,5 +103,5 @@ tags = {
   Name = "${var.env_prefix}-instance"
 }
 #key-pair or password authentication needed
-key_name = "myapp-key"
+key_name = aws_key_pair.ssh-key.key_name
 }
