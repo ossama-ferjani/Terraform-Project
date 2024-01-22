@@ -6,9 +6,9 @@ variable vpc_cidr_block {}
 variable subnet_cidr_block {}
 variable avail_zone {}
 variable env_prefix {}
-variable "my_ip" {}
-variable "instance_type" {}
-variable "key_pair" {}
+variable my_ip {}
+variable instance_type {}
+variable key_pair {}
 
 resource "aws_vpc" "myapp_vpc" {
    cidr_block = var.vpc_cidr_block
@@ -99,9 +99,24 @@ subnet_id = aws_subnet.myapp_subnet-1.id
 associate_public_ip_address = true
 vpc_security_group_ids = [aws_security_group.myapp_sg.id]
 availability_zone = var.avail_zone
+
+user_data = <<-EOF
+    #!/bin/bash
+    sudo yum update -y
+    sudo yum install -y docker
+
+    # Start the Docker service
+    sudo systemctl start docker
+    sudo systemctl enable docker
+
+    # Run Nginx container
+    sudo docker run -d -p 80:80 nginx
+EOF
 tags = {
   Name = "${var.env_prefix}-instance"
 }
 #key-pair or password authentication needed
 key_name = aws_key_pair.ssh-key.key_name
+
+
 }
