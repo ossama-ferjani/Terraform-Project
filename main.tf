@@ -7,6 +7,7 @@ variable subnet_cidr_block {}
 variable avail_zone {}
 variable env_prefix {}
 variable "my_ip" {}
+variable "instance_type" {}
 
 resource "aws_vpc" "myapp_vpc" {
    cidr_block = var.vpc_cidr_block
@@ -70,3 +71,16 @@ egress {
     cidr_blocks = ["0.0.0.0/0"]
 }
 }
+data "aws_ami" "latest_amazon_linux" {
+ most_recent = true
+  owners = ["amazon"] 
+  filter {
+    name = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"]
+  }
+  filter {
+    name = "virtualization-type"
+    values = ["hvm"]
+}
+}
+
